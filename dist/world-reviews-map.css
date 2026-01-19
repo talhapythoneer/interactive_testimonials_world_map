@@ -1,0 +1,479 @@
+/**
+ * World Reviews Map - Embeddable Interactive Map Component
+ * https://github.com/yourusername/world-reviews-map
+ * 
+ * All styles are scoped to .wrm-* prefix to avoid conflicts with host site styles
+ */
+
+/* Theme Variables - Customize these to change the entire color scheme */
+:root {
+  /* Primary Colors */
+  --wrm-primary-color: #6366f1;
+  --wrm-primary-hover: #8b5cf6;
+  --wrm-accent-color: #f43f5e;
+  
+  /* Background Colors */
+  --wrm-bg-dark: #0f172a;
+  --wrm-bg-medium: #1e293b;
+  --wrm-bg-light: #1e1b4b;
+  --wrm-bg-overlay: rgba(15, 23, 42, 0.98);
+  --wrm-bg-overlay-alt: rgba(30, 41, 59, 0.98);
+  
+  /* Border Colors */
+  --wrm-border-primary: rgba(99, 102, 241, 0.3);
+  --wrm-border-secondary: rgba(99, 102, 241, 0.2);
+  --wrm-border-dark: #0f172a;
+  --wrm-border-medium: #334155;
+  
+  /* Text Colors */
+  --wrm-text-primary: #f8fafc;
+  --wrm-text-secondary: #cbd5e1;
+  --wrm-text-muted: #94a3b8;
+  --wrm-text-dark: #64748b;
+  
+  /* Country Colors */
+  --wrm-country-default: #1e293b;
+  --wrm-country-stroke: #0f172a;
+  --wrm-country-active: #6366f1;
+  --wrm-country-hover: #f43f5e;
+  
+  /* UI Element Colors */
+  --wrm-white: #fff;
+  --wrm-transparent: transparent;
+  
+  /* Opacity Values */
+  --wrm-opacity-high: 0.95;
+  --wrm-opacity-medium: 0.05;
+}
+
+/* Container */
+.wrm-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.wrm-container *, .wrm-container *::before, .wrm-container *::after {
+  box-sizing: border-box;
+}
+
+/* Map Container */
+.wrm-map-wrapper {
+  background: var(--wrm-bg-overlay);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.wrm-map-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--wrm-transparent), var(--wrm-border-primary), var(--wrm-transparent));
+}
+
+/* SVG Map */
+.wrm-map-svg {
+  width: 100%;
+  height: auto;
+  cursor: grab;
+  display: block;
+}
+
+.wrm-map-svg:active {
+  cursor: grabbing;
+}
+
+/* Country Paths */
+.wrm-country {
+  fill: var(--wrm-country-default);
+  stroke: var(--wrm-country-stroke);
+  stroke-width: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.wrm-country.wrm-has-reviews {
+  fill: var(--wrm-country-active);
+  cursor: pointer;
+}
+
+.wrm-country.wrm-has-reviews:hover {
+  fill: var(--wrm-country-hover);
+  stroke: var(--wrm-white);
+  stroke-width: 1px;
+  filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.6));
+}
+
+/* Tooltip */
+.wrm-tooltip {
+  position: fixed;
+  background: linear-gradient(135deg, var(--wrm-bg-overlay) 0%, var(--wrm-bg-overlay-alt) 100%);
+  border: 1px solid var(--wrm-border-primary);
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 10000;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  width: min(360px, calc(100vw - 20px));
+  max-height: min(380px, 60vh);
+  overflow: hidden;
+}
+
+.wrm-tooltip.wrm-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wrm-tooltip-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--wrm-border-secondary);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.wrm-tooltip-country {
+  color: var(--wrm-text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wrm-tooltip-country::before {
+  content: '📍';
+  font-size: 0.9rem;
+}
+
+.wrm-tooltip-stats {
+  color: var(--wrm-text-muted);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wrm-tooltip-stats .wrm-count {
+  color: var(--wrm-accent-color);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Reviews Scroll */
+.wrm-reviews-scroll {
+  height: min(260px, 42vh);
+  overflow: hidden;
+  position: relative;
+}
+
+.wrm-reviews-scroll::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 25px;
+  background: linear-gradient(180deg, var(--wrm-bg-dark) 0%, var(--wrm-transparent) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wrm-reviews-scroll::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35px;
+  background: linear-gradient(0deg, var(--wrm-bg-medium) 0%, var(--wrm-transparent) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wrm-reviews-track {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  animation: wrm-scroll-up linear infinite;
+}
+
+@keyframes wrm-scroll-up {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+/* Review Card */
+.wrm-review {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  border-left: 3px solid var(--wrm-primary-color);
+}
+
+.wrm-review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.wrm-review-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.wrm-review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wrm-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--wrm-primary-color) 0%, var(--wrm-primary-hover) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wrm-white);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.wrm-review-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.wrm-review-name {
+  color: var(--wrm-text-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.wrm-review-industry {
+  color: var(--wrm-primary-color);
+  font-size: 0.7rem;
+  text-transform: capitalize;
+  margin: 0;
+}
+
+.wrm-review-text {
+  color: var(--wrm-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Legend */
+.wrm-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.wrm-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--wrm-text-muted);
+  font-size: 0.85rem;
+}
+
+.wrm-legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.wrm-legend-color.wrm-inactive {
+  background: var(--wrm-country-default);
+  border: 1px solid var(--wrm-border-medium);
+}
+
+.wrm-legend-color.wrm-active {
+  background: var(--wrm-primary-color);
+}
+
+/* Stats */
+.wrm-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.wrm-stat {
+  text-align: center;
+}
+
+.wrm-stat-value {
+  color: var(--wrm-accent-color);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.wrm-stat-label {
+  color: var(--wrm-text-dark);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* Zoom Controls */
+.wrm-zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wrm-zoom-btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid var(--wrm-border-primary);
+  border-radius: 6px;
+  color: var(--wrm-text-primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.wrm-zoom-btn:hover {
+  background: var(--wrm-primary-color);
+  border-color: var(--wrm-primary-color);
+}
+
+/* Loading */
+.wrm-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--wrm-text-muted);
+}
+
+.wrm-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--wrm-border-secondary);
+  border-top-color: var(--wrm-primary-color);
+  border-radius: 50%;
+  animation: wrm-spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes wrm-spin {
+  to { transform: rotate(360deg); }
+}
+
+.wrm-loading-text {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .wrm-map-wrapper {
+    padding: 12px;
+    border-radius: 12px;
+  }
+  
+  .wrm-legend {
+    gap: 16px;
+  }
+  
+  .wrm-legend-item {
+    font-size: 0.8rem;
+  }
+  
+  .wrm-stats {
+    gap: 24px;
+  }
+  
+  .wrm-stat-value {
+    font-size: 1.4rem;
+  }
+  
+  .wrm-zoom-controls {
+    bottom: 12px;
+    right: 12px;
+  }
+  
+  .wrm-zoom-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .wrm-tooltip {
+    width: calc(100vw - 20px);
+    max-width: 300px;
+    max-height: 50vh;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 10px !important;
+    top: auto !important;
+  }
+  
+  .wrm-tooltip.wrm-visible {
+    transform: translateX(-50%) !important;
+  }
+  
+  .wrm-reviews-scroll {
+    height: 32vh;
+  }
+  
+  .wrm-tooltip-header {
+    padding: 10px 14px;
+  }
+  
+  .wrm-tooltip-country {
+    font-size: 1rem;
+  }
+  
+  .wrm-review {
+    padding: 10px;
+  }
+  
+  .wrm-review-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .wrm-review-text {
+    font-size: 0.75rem;
+    -webkit-line-clamp: 2;
+  }
+}

@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+*.map
+
+# Temporary files
+*.tmp
+*.temp
+
+# Private data - keep your actual reviews local
+data/reviews.csv
+data/*.backup.csv

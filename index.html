@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Reviews Map - Demo</title>
+  
+  <!-- Dependencies -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
+  
+  <!-- World Reviews Map -->
+  <link rel="stylesheet" href="dist/world-reviews-map.css">
+  
+  <!-- Demo page styles (not required for the component) -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .demo-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .demo-header h1 {
+      color: #f8fafc;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    .demo-header p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-header">
+    <h1>🌍 Interactive Testimonials Map</h1>
+    <p>Hover over highlighted countries to see client feedback</p>
+  </div>
+  
+  <!-- The map container - this is all you need to embed -->
+  <div id="world-reviews-map"></div>
+  
+  <!-- Initialize the map -->
+  <script src="dist/world-reviews-map.js"></script>
+  <script>
+    const map = new WorldReviewsMap({
+      containerId: 'world-reviews-map',
+      reviewsPath: 'data/reviews.csv',
+      showLegend: true,
+      showStats: true,
+      showZoomControls: true
+    });
+  </script>
+</body>
+</html>
