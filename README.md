@@ -1,6 +1,8 @@
 # World Reviews Map 🌍
 
 An interactive, embeddable world map that displays client reviews by country. When users hover over a highlighted country, they see scrolling testimonials from clients in that region — perfect for portfolios, agency websites, and SaaS landing pages.
+<img width="1133" height="750" alt="image" src="https://github.com/user-attachments/assets/3f34f95b-07b1-4f28-af66-69112f98a5b8" />
+
 
 ## ✨ Features
 
