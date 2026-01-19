@@ -149,4 +149,4 @@ MIT License — free for personal and commercial use.
 
 ---
 
-Made with ❤️ for the global community
+Made with ❤️ and LLMs, for the global community
